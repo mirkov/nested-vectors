@@ -63,17 +63,11 @@ Check documentation on VALUE-READER and VALUE-WRITER slots for details of usage
 (defmethod initialize-instance :after ((self nested-vector-row) &key)
   (let ((nested-vector (nested-vector self))
 	(i (row-index self)))
-    (setf (value-reader self) (lambda (j &optional mod-row)
-				(if mod-row
-				    (setf (row-index self) j
-					  i j)
-				    (vvref nested-vector i j)))
-	  (value-writer self) (lambda (value j &optional mod-row)
-				(if mod-row
-				    (setf (row-index self) j
-					  i j)
-				    (setf (vvref nested-vector i j)
-					  value)))
+    (setf (value-reader self) (lambda (j)
+				(vvref nested-vector i j))
+	  (value-writer self) (lambda (value j)
+				(setf (vvref nested-vector i j)
+				      value))
 	  (row-index-setter self) (lambda (index)
 				    (setf i index)))))
 
@@ -92,17 +86,17 @@ to elements of row I")
   (:method ((self nested-vector-row))
     (column-count (nested-vector self))))
 
-(defgeneric vrref (nested-vector-row j &optional flag)
+(defgeneric vrref (nested-vector-row j)
   (:documentation
    "Retrieve element in j-th column of nested vector row")
-  (:method ((self nested-vector-row) j &optional flag)
-    (funcall (value-reader self) j flag)))
+  (:method ((self nested-vector-row) j)
+    (funcall (value-reader self) j)))
 
-(defgeneric (setf vrref) (value nested-vector-row j &optional flag)
+(defgeneric (setf vrref) (value nested-vector-row j)
   (:documentation
    "Set element in j-th column of nested vector row")
-  (:method (value (self nested-vector-row) j &optional flag)
-    (funcall (value-writer self) value j flag)))
+  (:method (value (self nested-vector-row) j)
+    (funcall (value-writer self) value j)))
 
 (define-test nth-row
   "Test retriving and setting row values.  Then test setting the row,
@@ -114,7 +108,7 @@ and also incrementing and decrementing the row"
 						:initial-contents '(1.0 2.0)))
     (setf (nth-column nv 2) (make-column-vector 2 'grid:foreign-array
 						:initial-contents '(3.0 4.0)))
-    (let ((row (make-nested-vector-row  nv 1)))
+    (let ((row (nth-row  nv 1)))
       (assert-equal 'b (vrref row 0))
       (assert-equal 2.0 (vrref row 1))
       (setf (vrref row 2) 15.0) ; ((a b) (1 2) (3 15))

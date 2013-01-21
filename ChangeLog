@@ -1,0 +1,7 @@
+2013-01-20  Mirko Vukovic  <mirko.vukovic@us.tel.com>
+
+	* nth-row-class-definition+accessors.lisp (nth-row): Fixed
+	incorrect function call
+	(): Removed obsolete flag for internal functions to accessing,
+	setting row elements, and row index
+
