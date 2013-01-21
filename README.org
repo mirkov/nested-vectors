@@ -1,0 +1,127 @@
+#+title: nested-vectors
+
+* Introduction
+
+  The package provides a matrix-like data structure whose internal
+  format is a vector of sequences, e.g.
+  #+BEGIN_EXAMPLE
+  #(#(1 2) #(3 4) #('a 'b) #("a" "b"))
+  #+END_EXAMPLE
+  The structure has the following properties:
+  - It can be extended in either dimension (not yet implemented)
+  - The inner sequences can by one of ~'array~, ~'list~, or
+    ~'grid:foreign-array'
+    
+    
+  The package provides facilities for:
+  - Defining and initializing
+  - Extracting rows and columns
+  - Accessing individual elements
+  - Accessing and iterating over rows or columns
+
+** Raison d'être
+
+   The purpose of this package is two-fold.  First, it will replace
+   some of the plumbing of my [[https://github.com/mirkov/data-table][data-table]] package.
+
+   Second, it is a prototype for a general grid structure for Liam
+   Healy's ~grid~ package (part of [[http://www.common-lisp.net/project/antik/][Antik]]).  Grids will eventually
+   support nested structures: vectors of vectors of lists of ...  In
+   its current incarnation it is a very poor prototype.  Also see [[*~nested-vectors~%20as%20prototype%20for%20nested%20~grid~'s][here]].
+
+* External interface
+
+** Generation and inspection of a nested vector
+
+   The nested vector is initialized using the ~make-nested-vector~
+   function, e.g.
+   #+BEGIN_EXAMPLE
+   (make-nested-vector 2 3 :adjustable-rows-p)
+   #+END_EXAMPLE
+   It is an object of class ~nested-vector~.  ~print~ and ~describe~
+   methods have been implemented for it.
+
+   The object's properties can be inspected using ~row-count~,
+   ~column-count~, ~adjustable-rows-p~, ~adjustable-columns-p~.
+
+   
+
+** Setting and accessing fields of a nested vector
+
+   The nested vector columns are set and accessed using ~nth-column~:
+   #+BEGIN_EXAMPLE
+   (nth-column 0 nv)
+   (setf (nth-column 0 nv) sequence)
+   #+END_EXAMPLE
+   Allowed ~sequence~ types are lists, native arrays, and foreign
+   arrays (~cl:list~, ~cl:array~, and ~grid:foreign-array~
+   respectively).
+
+   *Restriction*: Nested vectors with adjustable columns cannot be used
+   to store foreign arrays.
+
+   Individual elements are set and accessed using ~vvref~ which has a
+   syntax identical to that of ~aref~:
+   #+BEGIN_EXAMPLE
+   (vvref nested-vector i j)
+   (setf (vvref nested-vector i j) value)
+   #+END_EXAMPLE
+
+   ~nth-row~ returns a ~nested-vector-row~ object (~print~ and
+   ~describe~ work on it).  This object can be used to inspect and set
+   row values.  See [[*~nested-vector-row~][here]] for details.
+   
+** Iterating over nested vectors
+
+   Iterating over rows, columns or their indices has been defined
+   using ~iter~.  Examples of use:
+   #+BEGIN_EXAMPLE
+(iter:iter (iter:for r :in-nv-row nv)
+   ...)
+(iter:iter (iter:for ri :row-index-of-nv nv)
+   ...)
+(iter:iter (iter:for c :in-nv-column nv)
+   ...)
+(iter:iter (iter:for ci :column-index-of-nv nv)
+   ...)
+   #+END_EXAMPLE
+
+   One can also iterate over elements or indices of
+   ~nested-vector-row~:
+   #+BEGIN_EXAMPLE
+(iter:iter (iter:for v :in-nv-row-element row)
+   ...)
+   #+END_EXAMPLE
+
+** ~nested-vector-row~
+
+   ~nested-vector-row~ object is used to access row elements of a
+   nested vector.  ~row-index~ specifies the row.  It can be changed
+   using ~setf~, ~incf~, ~decf~.
+
+   Individual row elements are set or accessed using ~vrref~.
+   
+    
+* Implementation notes
+
+  
+
+** ~nested-vector-row~
+
+   The external interface to accessing row elements is the ~vrref~.
+   All the activities are done using three functions that are built on
+   the fly when the object is initialized (during
+   ~initialize-instance :after~).  
+
+   The object has three slots containing these functions.  They access
+   and set elements, or change the row index.  These functions share a
+   row-index variable using a closure established during the object
+   initialization.  See the source code for comments.
+
+
+* ~nested-vectors~ as prototype for nested ~grid~'s
+
+  to be written ...
+  
+
+   
