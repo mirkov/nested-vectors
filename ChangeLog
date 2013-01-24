@@ -1,7 +1,47 @@
+2013-01-23  Mirko Vukovic  <mirko.vukovic@us.tel.com>
+
+	* nested-vectors-class-definition.lisp (nested-vector): Changed
+	export state-related symbols definitions
+
+	* nth-row-class-definition+accessors.lisp (nth-row 'setf nth-row'):
+	Added assert-clause to :before method
+
+	* nested-vectors-accessors.lisp (vvref 'setf vvref'): Added
+	:before method to test for valid state
+
+	* nested-vectors-push-extend.lisp (add-row): Added assert-clause
+	to :before method
+
+	* nested-vectors-initializing.lisp (make-vv-spine): Bug fix
+
+	* nested-vectors-class-definition.lisp (operational-p): Added new
+	generic function and method.
+
+	* nested-vectors-package-def.lisp (#:nested-vectors): Importing
+	unified-sequence symbols
+
+	* nested-vectors.asd (#:nested-vectors): Moved unified sequence
+	code to separate asdf system , and added dependency to it
+
+	* nested-vectors-initializing.lisp (make-nested-vector): Changed
+	order of initializing procedures
+
 2013-01-20  Mirko Vukovic  <mirko.vukovic@us.tel.com>
+
+	* nested-vectors-initializing.lisp (make-vv-spine): Added
+	`fill-pointer 0' to make-array
+
+	* nth-row-class-definition+accessors.lisp (setf-nth-row): New test
+
+	* nested-vectors-initializing.lisp (make-nested-vector): Modified
+	argument list.  Removed column-specifications and added
+	initial-contents.  Initial contents are loaded using
+	vector-push-extend.  This mechanism may bring into conflict
+	column-count with spine's length
 
 	* nth-row-class-definition+accessors.lisp (nth-row): Fixed
 	incorrect function call
 	(): Removed obsolete flag for internal functions to accessing,
 	setting row elements, and row index
+	(setf nth-row): Added
 

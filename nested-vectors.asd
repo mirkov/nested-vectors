@@ -5,23 +5,24 @@
   :description "Array like storage, but in terms of nested vectors"
   :author "Mirko Vukovic <mirko.vukovic@gmail.com>"
   :license "MIT"
-  :depends-on (#:lisp-unit
-               #:alexandria
-	       #:anaphora
-               #:antik
-	       #:iterate)
+  :depends-on ("lisp-unit"
+               "alexandria"
+	       "anaphora"
+               "antik"
+	       "iterate"
+	       "unified-sequences")
   :components
   ((:module init
 	    :pathname #P"./"
 	    :serial t
-	    :components ((:file "nested-vectors-package-def")
-			 (:file "column-vectors")))
+	    :components ((:file "nested-vectors-package-def")))
    (:module nested-vectors
 	    :pathname #P"./"
 	    :serial t
 	    :components ((:file "nested-vectors-class-definition")
 			 (:file "nested-vectors-initializing")
-			 (:file "nested-vectors-accessors")))
+			 (:file "nested-vectors-accessors")
+			 (:file "nested-vectors-push-extend")))
    (:module nth-row
 	    :pathname #P"./"
 	    :serial t

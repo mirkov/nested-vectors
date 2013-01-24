@@ -3,14 +3,15 @@
 * Introduction
 
   The package provides a matrix-like data structure whose internal
-  format is a vector of sequences, e.g.
+  format is a vector of sequences of equal length, e.g.
   #+BEGIN_EXAMPLE
   #(#(1 2) #(3 4) #('a 'b) #("a" "b"))
   #+END_EXAMPLE
   The structure has the following properties:
-  - It can be extended in either dimension (not yet implemented)
-  - The inner sequences can by one of ~'array~, ~'list~, or
-    ~'grid:foreign-array'
+  - It can be extended in either dimension by adding rows and/or columns
+    - Subject to certain conditions
+  - The inner sequences can by one of ~vector~, ~list~, or
+    ~grid:mvector~
     
     
   The package provides facilities for:
@@ -18,16 +19,18 @@
   - Extracting rows and columns
   - Accessing individual elements
   - Accessing and iterating over rows or columns
+  - Adding rows and columns
+
 
 ** Raison d'être
 
    The purpose of this package is two-fold.  First, it will replace
    some of the plumbing of my [[https://github.com/mirkov/data-table][data-table]] package.
 
-   Second, it is a prototype for a general grid structure for Liam
+   Second, it is a test-bed for a general grid structure for Liam
    Healy's ~grid~ package (part of [[http://www.common-lisp.net/project/antik/][Antik]]).  Grids will eventually
-   support nested structures: vectors of vectors of lists of ...  In
-   its current incarnation it is a very poor prototype.  Also see [[*~nested-vectors~%20as%20prototype%20for%20nested%20~grid~'s][here]].
+   support nested structures: vectors of vectors of lists of ...  Also
+   see [[*~nested-vectors~%20as%20prototype%20for%20nested%20~grid~'s][here]].
 
 * External interface
 
@@ -99,13 +102,34 @@
    nested vector.  ~row-index~ specifies the row.  It can be changed
    using ~setf~, ~incf~, ~decf~.
 
-   Individual row elements are set or accessed using ~vrref~.
+   Individual row elements are set or accessed using ~vrref~.  Row
+   contents can be obtained via ~row-contents~ as a list.
    
     
 * Implementation notes
 
-  
+** ~nested-vector~ states and allowed operations
 
+   The allowed states are ~defined~ and ~operational~:
+   - ~defined~ :: dimensions and adjustement flags, with limited set
+                  and retrieval functionality
+   - ~operational~ :: Full functionality
+     
+     
+   In the ~defined~ state we allow operations to examine the state of
+   the nested vectors and add additional data.  Once the data is
+   loaded, the user manually sets the state to operational.
+
+   Allowed operations during the ~defined~ state:
+   - All declaration queries
+     - row-count, column-count
+     - state
+     - adjustable-row-p, adjustable-column-p
+   - setf nth-column
+
+     
+   Not allowed are operations with rows and individual elements
+       
 ** ~nested-vector-row~
 
    The external interface to accessing row elements is the ~vrref~.
@@ -119,7 +143,7 @@
    initialization.  See the source code for comments.
 
 
-* ~nested-vectors~ as prototype for nested ~grid~'s
+* ~nested-vectors~ as test-bed for nested ~grid~'s
 
   to be written ...
   
